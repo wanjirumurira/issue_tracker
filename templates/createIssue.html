@@ -1,0 +1,14 @@
+{% extends "signin.html" %}
+{% block content %}
+<h3 class="text-center mb-4">{{project_name}}</h3>
+
+<form action="" method="POST">
+    {% csrf_token %}  
+    {{ create_issue.as_p }}  
+    <p>
+        <a href="/project/{{project_name}}"><button type="submit" class="btn btn-primary rounded submit p-2 px-3">Submit</button></a> 
+        <a href="/project/{{project_name}}"><button type="submit" class="btn btn-primary rounded submit p-2 px-3">Cancel</button></a>
+    </p>
+    
+    </form>
+{% endblock %}

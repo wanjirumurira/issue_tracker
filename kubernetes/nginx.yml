@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+  labels:
+    app: nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      volumes:
+        - name: issue-app-data
+          persistentVolumeClaim:
+            claimName: django-app-pvc
+      containers:
+        - image: issuetracker-nginx:latest
+          name: nginx
+          ports:
+            - containerPort: 80
+              name: proxy
+          volumeMounts:
+            - name: issue-app-data
+              mountPath: /home/app/web/staticfiles
+          resources:
+            limits:
+              cpu: "0.5"  # Maximum of 0.5 CPU cores
+              memory: "512Mi"  # Maximum of 512 MiB memory

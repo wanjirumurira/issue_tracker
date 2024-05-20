@@ -1,0 +1,59 @@
+{% extends "index.html" %}
+{% block content %}
+               <a href="/create_issues/{{project.project_name}}"><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
+                    Create An Issue
+                </button></a>
+                            <div class="table-responsive ">
+                                <table class="table table-hover " style="cursor: pointer;">
+                                    <thead>
+                                        <tr>
+                                            <th class="border-top-0">Issue Name</th>
+                                            <!-- <th class="border-top-0">Issue Description</th> -->
+                                            <th class="border-top-0">Issue Status</th>
+                                            <th class="border-top-0">Issue Priority</th>
+                                            <th class="border-top-0">Created By</th>
+                                            <th class="border-top-0">Assigned to</th>
+                                            <th class="border-top-0">Issue Image</th>
+                                            <th class="border-top-0"></th>                                            
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {%  for issue in issues %}
+                                        <tr>
+                                            <td><a href="/issuesDescription/{{issue.issue_id}}"><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
+                                                {{issue.issue_name}}
+                                             </button></a></td>
+                                            <!-- <td>{{issue.issue_description}}</td> -->
+                                            <td>{{issue.issue_status}}</td>
+                                            <td >{{issue.issue_severity}}</td>
+                                            <td>{{issue.created_by}}</td>
+                                            <td >
+                                                {% for contributor in issue.assigned_to.all %}
+                                                <li>{{contributor.username}}</li>
+                                                {% endfor %}
+                                            </td>
+                                            <td><a href="{{issue.issue_image.url}}">issue.issue_image</a></td>
+                                            <td>
+                                                
+                                                <a href="/updateIssues/{{issue.issue_id}}"> <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
+                                                    Update
+                                                 </button></a>
+                                                <a href="/deleteIssues/{{issue.issue_id}}"> <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
+                                                    Delete
+                                                 </button></a>
+                                            </td>
+                                               
+
+                                            
+                                            
+                                        </tr>
+                                        {% endfor %}
+                                       
+                                        
+                                        
+
+                                          
+                                    </tbody>
+                                </table>
+                            </div>
+                            {% endblock %}

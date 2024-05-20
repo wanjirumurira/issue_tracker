@@ -1,0 +1,15 @@
+{% extends "signin.html" %}
+{% block content %}
+<p>Are you sure you want to delete? </p>
+<h3 style="text-align: center;"> {{project}} <h3></h3>                                                               
+<form method="post" action="/deleteProject/{{project.project_id}}">
+    <p style="text-align: center;">
+        {% csrf_token %}
+        
+        <input type="submit" value="Delete" >
+        <a href="/projects">Cancel</a>
+
+    </p>
+   
+</form>
+{% endblock %}

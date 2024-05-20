@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: Issue-config
+data:
+  DEBUG: "True"
+  DB_HOST: issue-db

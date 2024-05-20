@@ -1,0 +1,19 @@
+{% extends "signin.html" %}
+
+
+
+{% block content %}
+<form action="create_project" method="POST"> 
+    {% csrf_token %}
+    
+    {{ create_project }}
+
+
+    <p>
+        <a href="/projects"><button type="submit" class="btn btn-primary rounded submit p-2 px-3">Submit</button></a> 
+        <a href="/projects"><button type="submit" class="btn btn-primary rounded submit p-2 px-3">Cancel</button></a>
+        
+    </p>
+    
+    </form>
+{% endblock %}
