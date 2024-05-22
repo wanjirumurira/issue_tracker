@@ -46,7 +46,7 @@ spec:
           persistentVolumeClaim: 
             claimName: django-app-pvc
       containers:
-        - image: issuetracker-backend
+        - image: wanjirumurira/issue_backend
           name: issue-backend
           volumeMounts:
             - name: issue-app-data
