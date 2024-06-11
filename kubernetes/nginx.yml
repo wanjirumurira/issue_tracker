@@ -19,7 +19,11 @@ spec:
           persistentVolumeClaim:
             claimName: django-app-pvc
       containers:
+<<<<<<< HEAD
         - image: wanjirumurira/issue_nginx:latest
+=======
+        - image: wanjirumurira/issue_nginx
+>>>>>>> 0f1f972d06eff35480856ffaa0921553c7b7667e
           name: nginx
           ports:
             - containerPort: 80
@@ -29,5 +33,5 @@ spec:
               mountPath: /home/app/web/staticfiles
           resources:
             limits:
-              cpu: "0.5"  # Maximum of 0.5 CPU cores
+              cpu: "0.25"  # Maximum of 0.5 CPU cores
               memory: "512Mi"  # Maximum of 512 MiB memory
