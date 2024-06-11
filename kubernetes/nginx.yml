@@ -19,7 +19,7 @@ spec:
           persistentVolumeClaim:
             claimName: django-app-pvc
       containers:
-        - image: issuetracker-nginx:latest
+        - image: wanjirumurira/issue_nginx:latest
           name: nginx
           ports:
             - containerPort: 80

@@ -1,18 +1,19 @@
-version: '3'
+version: '3.8'
 
 services:
   db:
     image: postgres:12
-    #environment:
-    #  - POSTGRES_DB=postgres
-    #  - POSTGRES_USER=postgres
-    #  - POSTGRES_PASSWORD=postgres
     env_file:
       - .env
     volumes:
-     - pg_data:/var/lib/postgresql/data
+      - pg_data:/var/lib/postgresql/data
     networks:
       - djangonetwork
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $POSTGRES_USER"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   backend:
     build: .
@@ -23,12 +24,10 @@ services:
     env_file:
       - .env
     depends_on:
-      - db
-   
+      db:
+        condition: service_healthy
     networks:
       - djangonetwork
-
- 
 
   nginx:
     build: ./nginx
@@ -45,7 +44,6 @@ services:
 volumes:
   static_volume:
   pg_data:
-
 
 networks:
   djangonetwork:
