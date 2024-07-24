@@ -1,0 +1,18 @@
+{% extends "signin.html" %}
+{% block content %}
+<p>Are you sure you want to delete? </p>
+<h3 style="text-align: center;">  
+                                
+                                {{issue}}
+                             </h3>
+<form method="post" action="/deleteIssues/{{issue.issue_id}}">
+    <p style="text-align: center;">
+        {% csrf_token %}
+        {{ issue_delete}}
+        <input type="submit" value="Delete" >
+        <a href="/project/{{issue.project_name }}">Cancel</a>
+
+    </p>
+   
+</form>
+{% endblock %}

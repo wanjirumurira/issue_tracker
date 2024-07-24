@@ -1,0 +1,120 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>Projects</title>
+        
+
+        <!-- To be reconsidered -->
+        <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap" rel="stylesheet">
+	    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+	    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+        
+    </head>
+    <body>
+
+        <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom bg-white">
+            <div class="container-fluid bg-white">
+                
+                {% for message in messages%}
+                    <p style="color: red;">{{message}}</p>
+                {% endfor %}
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav ms-auto mt-2 mt-lg-0">
+                        <li class="nav-item active"><a class="nav-link" href="/projects">Home</a></li>
+                        <li class="nav-item active"><a class="nav-link" href="/userIssues">MyIssues</a></li>
+                        <li class="nav-item active"><a class="nav-link" href="/logout">Logout</a></li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <div class="d-flex bg-light" id="wrapper">
+            <!-- Sidebar-->
+            <!-- <div class="border-end  list-group-item-light" id="sidebar-wrapper">
+                <div class="sidebar-heading border-bottom "><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
+                    Hey, {{request.user.username}}
+                 </button></div>
+            </div> -->
+            <!-- Page content wrapper-->
+            <div id="page-content-wrapper">
+                <!-- Top navigation-->
+                
+                <!-- Page content-->
+                {% block content %}
+                <a href="/create_project"> <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
+                    Add Project
+                 </button></a>                    <!-- column -->
+                    
+                                                  
+                            <div class="table-responsive ">
+                                <table class="table table-hover " style="cursor: pointer;">
+                                    <thead>
+                                        <tr>
+                                            <th class="border-top-0">Project Name</th>
+                                            <th class="border-top-0">Project Contibutors</th>
+                                            <th class="border-top-0">Project Creation Day</th>
+                                            <th class="border-top-0"></th>
+                                            
+                                            
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {%  for items in project %}
+                                        <tr>
+                                            
+                                            <td><a href="/project/{{items.project_name}}">{{items.project_name}}</a></td>
+                                            
+
+                                            <td >
+                                                {% for contributor in items.contributors.all %}
+                                                <li>{{contributor.username}}</li>
+                                                {% endfor %}
+                                            </td>
+                                            <td >
+                                                {{items.created_at}}
+                                            </td>
+                                            
+
+                                            <td>
+                                                
+                                                <a href="/updateProject/{{items.project_id}}"> <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
+                                                    Update
+                                                 </button></a>
+                                                <a href="/deleteProject/{{items.project_id}}"> <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
+                                                    Delete
+                                                 </button></a>
+                                            </td> 
+                                               
+                                            
+                                            
+                                        </tr>
+                                        {% endfor %}
+                                       
+                                        
+                                        
+
+                                          
+                                    </tbody>
+                                </table>
+                            </div>
+                {% endblock %}     
+               
+                    
+               
+            </div>
+        </div>
+        
+        
+       
+
+   
+        
+        
+    
+    </body>
+</html>

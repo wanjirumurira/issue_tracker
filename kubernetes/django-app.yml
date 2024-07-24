@@ -1,0 +1,89 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+  labels:
+    app: backend
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 8000
+  selector:
+    app: backend
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: django-app-pvc
+  labels: 
+    app: backend
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  labels:
+    app: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      volumes:
+        - name: issue-app-data
+          persistentVolumeClaim: 
+            claimName: django-app-pvc
+      containers:
+        - image: wanjirumurira/issue_backend:latest
+          name: issue_backend
+          volumeMounts:
+            - name: issue-app-data
+              mountPath: /home/app/web/staticfiles
+          ports:
+            - containerPort: 8000
+              name: gunicorn
+          
+          env:
+            - name: POSTGRES_USER
+              value: postgres
+            - name: POSTGRES_NAME
+              value: postgres
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: issue-secrets
+                  key: db_password
+            
+            - name: SECRET_KEY
+              valueFrom:
+                 secretKeyRef:
+                   name: issue-secrets
+                   key: secret_key
+            - name: EMAIL_HOST_USER
+              valueFrom:
+                 secretKeyRef:
+                   name: issue-secrets
+                   key: email_host_user
+            - name: EMAIL_HOST_PASSWORD
+              valueFrom:
+                 secretKeyRef:
+                   name: issue-secrets
+                   key: email_host_password
+          resources:
+            limits:
+              cpu: "0.5"  # Maximum of 0.5 CPU cores
+              memory: "512Mi"  # Maximum of 512 MiB memory
+
+        

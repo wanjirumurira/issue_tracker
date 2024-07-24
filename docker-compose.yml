@@ -1,0 +1,71 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:12
+    environment:
+      - POSTGRESQL_USERNAME=${POSTGRES_USER}
+      - POSTGRESQL_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRESQL_DATABASE=${POSTGRES_DB}
+    expose:
+      - 5432
+    env_file:
+      - .env
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    networks:
+      - djangonetwork
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $POSTGRES_USER"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${pg_email}
+      PGADMIN_DEFAULT_PASSWORD: ${pg_password}
+    ports:
+      - "5050:80"
+    networks:
+      - djangonetwork
+    depends_on:
+      - db
+
+  backend:
+    build: .
+    expose:
+      - 8000
+    ports:
+      - 8000:8000
+    volumes:
+      - static_volume:/home/app/web/staticfiles
+    env_file:
+      - .env
+    depends_on:
+      - db
+    networks:
+      - djangonetwork
+
+  nginx:
+    build: ./nginx
+    ports:
+      - 8080:80
+    volumes:
+      - static_volume:/home/app/web/staticfiles
+    depends_on:
+      - backend
+    networks:
+      - djangonetwork
+    restart: always
+
+volumes:
+  static_volume:
+  pg_data:
+
+networks:
+  djangonetwork:
+    driver: bridge
