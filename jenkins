@@ -8,7 +8,7 @@ pipeline {
     stages {
         stage('Clone Code') {
             steps {
-                echo "Cloning the code"
+                echo "Cloning the code from Git repository"
                 git url: 'https://github.com/wanjirumurira/issue_tracker.git', branch: 'main'
             }
         }
@@ -16,35 +16,30 @@ pipeline {
         stage('Copy .env File') {
             steps {
                 echo "Copying .env file"
-                sh "sudo cp /${pwd}/.env /var/lib/jenkins/workspace/issue/.env"
+                script {
+                    def sourceEnvFile = '/home/vagrant/issue/.env'
+                    def destinationEnvFile = '/var/lib/jenkins/workspace/issue/.env'
+                    
+                    if (fileExists(sourceEnvFile)) {
+                        sh "sudo cp ${sourceEnvFile} ${destinationEnvFile}"
+                        echo ".env file copied successfully"
+                    } else {
+                        error "Source .env file does not exist at ${sourceEnvFile}"
+                    }
+                }
             }
         }
 
         stage('Build and Run') {
             steps {
+                echo "Stopping and removing existing Docker containers"
+                sh "sudo docker-compose -f /var/lib/jenkins/workspace/issue/docker-compose.yml down || true"
+
                 echo "Building and starting Docker containers"
-                sh "sudo docker-compose -f /var/lib/jenkins/workspace/issue/docker-compose.yml down"
-                sh "sudo docker-compose -f /var/lib/jenkins/workspace/issue/docker-compose.yml up -d"
-            }
-        }
-
-        stage('Docker Login and Push') {
-            steps {
-                echo "Docker login and push"
-                withCredentials([usernamePassword(credentialsId: 'dockerHub', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
-                    sh "echo \${DOCKER_PASSWORD} | docker login -u \${DOCKER_USERNAME} --password-stdin \${DOCKER_REGISTRY}"
-                    sh "sudo docker-compose -f /var/lib/jenkins/workspace/issue/docker-compose.yml push"
-                }
-            }
-        }
-
-        stage('Deploy') {
-            steps {
-                echo "Redeploying the containers"
-                sh "sudo docker-compose -f /var/lib/jenkins/workspace/issue/docker-compose.yml down"
                 sh "sudo docker-compose -f /var/lib/jenkins/workspace/issue/docker-compose.yml up -d"
             }
         }
     }
-}
 
+   
+}
