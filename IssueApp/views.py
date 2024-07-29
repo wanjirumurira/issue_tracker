@@ -173,19 +173,6 @@ def register(request):
                 # user.set_password(password)
                 user.is_active = False
                 user.save()
-                print("the user is :", user)
-                print(user.check_password(password))
-                #user.save()
-             
-                subject = "Welcome to Issue Tracker Login!!!"
-                message = "Hello {username}! \n \
-                Welcome to our Issue Tracker Website.\
-                You have successfully registered with Issue Trackerl.We have sent you a confirmation email. \
-                Pleaseconfirm your email address in order to activate your account."
-                from_email = settings.EMAIL_HOST_USER
-                to_user = user_email
-                send_mail(subject, message, from_email, [to_user], fail_silently = True,)
-                
                 #Email Address Confirmation 
                 current_site = get_current_site(request)
                 email_subject = "Confirm your email - Issue Tracker"
