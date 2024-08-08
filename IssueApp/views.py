@@ -222,11 +222,8 @@ def sign_in(request):
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
-
         user = authenticate(request, username=username, password=password)
-        print("please work : ", user)
-        print(password)
-        print(user)
+
         if user is not None:
             login(request, user)
             return redirect('projects')
@@ -242,7 +239,10 @@ def sign_out(request):
 def password_reset(request):
     if request.method == 'POST':
        user_email = request.POST['email']
-       user = User.objects.get(email=user_email)
+       try:
+           user = User.objects.get(email=user_email)
+       except User.DoesNotExist:
+            return HttpResponse('If this email address is known to us, an email will be sent to your account.')
        site = get_current_site(request)
 
        if user is not None:
@@ -272,18 +272,20 @@ def reset(request, uidb64, token):
             user = None
         
         if user is not None and generate_token.check_token(user, token):
-            password = request.POST('password')
-            password2 = request.POST('password')
+            password = request.POST['password']
+            password2 = request.POST['password']
             if password != password2:
                 messages.success(request,'Passwords do not match !')
                 return render(request, 'passwordreset.html')
             else:
-                user_new_password = User.objects.create(password=password)
+                user.set_password(password)
                 user.is_active = True
-                user_new_password.save()
+                user.save()
                 messages.success(request, 'Password reset successfully.')
                 return redirect ('/login')
-
+    else:
+        return render(request, 'passwordreset.html', {'uidb64': uidb64, 'token': token})
+    
 
    
        

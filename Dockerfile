@@ -23,14 +23,12 @@ RUN pip install -r requirements.txt
 # Copy the .env file
 COPY .env $HOME/.env
 
-# copy entrypoint.prod.sh
-COPY ./entrypoint.prod.sh .
+# copy project
+COPY . $APP_HOME
+RUN chmod +x $APP_HOME/manage.py
 RUN sed -i 's/\r$//g' $APP_HOME/entrypoint.prod.sh
 RUN chmod +x $APP_HOME/entrypoint.prod.sh
 
 
-# copy project
-COPY . $APP_HOME
-
 # run entrypoint.prod.sh
-ENTRYPOINT ["sh", "/home/app/web/entrypoint.prod.sh"]
+ENTRYPOINT ["/home/app/web/entrypoint.prod.sh"]

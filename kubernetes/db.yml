@@ -1,15 +1,16 @@
 apiVersion: v1
 kind: Service
-metadata: 
+metadata:
   name: db
-  labels:
-     app: db
 spec:
+  type: ClusterIP
   ports:
-    - port: 5432
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432
   selector:
     app: db
-  clusterIP: None
+
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -22,7 +23,7 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 1Gi
+      storage: 250M
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -68,4 +69,3 @@ spec:
             limits:
               cpu: "0.25"  # Maximum of 0.5 CPU cores
               memory: "512Mi"  # Maximum of 512 MiB memory
-      

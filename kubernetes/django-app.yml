@@ -3,14 +3,16 @@ apiVersion: v1
 kind: Service
 metadata:
   name: backend
-  labels:
-    app: backend
 spec:
-  type: LoadBalancer
-  ports:
-    - port: 8000
+  type: NodePort
   selector:
     app: backend
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 8000
+      nodePort: 31000
+---
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -23,7 +25,7 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 1Gi
+      storage: 500Mi
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -36,10 +38,12 @@ spec:
   selector:
     matchLabels:
       app: backend
+      tier: app
   template:
     metadata:
       labels:
         app: backend
+        tier: app
     spec:
       volumes:
         - name: issue-app-data
@@ -47,7 +51,7 @@ spec:
             claimName: django-app-pvc
       containers:
         - image: wanjirumurira/issue_backend:latest
-          name: issue_backend
+          name: issue-backend
           volumeMounts:
             - name: issue-app-data
               mountPath: /home/app/web/staticfiles
@@ -83,7 +87,19 @@ spec:
                    key: email_host_password
           resources:
             limits:
-              cpu: "0.5"  # Maximum of 0.5 CPU cores
+              cpu: "0.25"  # Maximum of 0.5 CPU cores
               memory: "512Mi"  # Maximum of 512 MiB memory
-
-        
+   
+        - imagePullPolicy: IfNotPresent
+          image: wanjirumurira/issue_nginx:latest
+          name: nginx
+          ports:
+            - containerPort: 80
+              name: proxy
+          volumeMounts:
+            - name: issue-app-data
+              mountPath: /home/app/web/staticfiles
+          resources:
+            limits:
+              cpu: "0.25"  # Maximum of 0.5 CPU cores
+              memory: "512Mi"  # Maximum of 512 MiB memory
