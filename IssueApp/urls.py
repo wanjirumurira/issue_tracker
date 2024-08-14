@@ -3,7 +3,9 @@ from django.conf import settings
 from django.conf.urls.static import static
 from . import views
 urlpatterns = [
-    path('',views.register,name='register'),
+    path('register',views.register,name='register'),
+    # path('register_company',views.register_company,name='register_company'),
+    path('send_team_invite/<str:pk>',views.send_team_invite, name='send_team_invite'),
     path('projects',views.projects,name='projects'),
     path('create_project',views.create_project,name='create_project'),
     path('updateProject/<str:pk>',views.updateProject,name='updateProject'),
@@ -18,6 +20,8 @@ urlpatterns = [
     path('logout',views.sign_out,name='logout'),
     path('activate/<str:uidb64>/<str:token>',views.activate,name='activate'),
     path('passwordreset',views.password_reset,name='passwordreset'),
-     path('reset/<str:uidb64>/<str:token>',views.reset,name='reset'),
+    path('reset/<str:uidb64>/<str:token>',views.reset,name='reset'),
+    path('',views.landing_page,name='landing'),
+
 ]+ static(settings.MEDIA_URL,
 document_root=settings.MEDIA_ROOT)

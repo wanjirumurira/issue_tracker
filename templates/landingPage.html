@@ -1,0 +1,67 @@
+{% load static%}
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+  </head>
+  <body>
+    <nav class="navbar">
+        <!-- LOGO -->
+        <div class="logo"></div>
+    
+        <!-- NAVIGATION MENU -->
+        <ul class="nav-links">
+    
+          <!-- USING CHECKBOX HACK -->
+    
+          <!-- NAVIGATION MENUS -->
+          <div class="menu">
+    
+            <li><a href="/">Home</a></li>
+            <li><a href="/">About</a></li>
+    
+            <li class="services">
+              <a href="/">Services</a>
+    
+              <!-- DROPDOWN MENU -->
+              <ul class="dropdown">
+                <li><a href="/register_company">Register Company </a></li>
+                <li><a href="/login">Login</a></li>
+                <li><a href="/register">Create Account</a></li>
+               
+              </ul>
+    
+            </li>
+    
+            <li><a href="/">Contact</a></li>
+          </div>
+        </ul>
+      </nav>
+
+    <section class="bg-primary">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6 col-lg-offset-3 col-md-8 col-md-offset-2 text-center">
+                    <h2 class="margin-top-0 text-primary">Issue Tracker</h2>
+                    <br>
+                    <p class="text-center mb-4">
+                        Welcome to our Issue Tracker, your go-to platform for managing and resolving issues efficiently.
+                        Whether you're a developer, project manager, or support team member, this tool
+                        will help you keep track of bugs, feature requests, and other tasks crucial to your project’s success.
+                    </p>
+                    <!-- <a href="#three" class="btn btn-default btn-xl page-scroll">Learn More</a> -->
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!--scripts loaded here -->
+    <script src="./js/jquery.min.js"></script>
+    <script src="./js/bootstrap.min.js"></script>
+    <script src="./js/jquery.easing.min.js"></script>
+    <script src="./js/wow.js"></script>
+    <script src="./js/scripts.js"></script>
+  </body>
+</html>

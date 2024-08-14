@@ -20,17 +20,29 @@ from issuetracker import settings
 
 
 # Create your views here.
-#@login_required(login_url='/login')
+@login_required(login_url='/login')
 def projects(request):
     project = Project.objects.all()
     users = User.objects.all()
     context = {'project':project, 'users':users}
     return render(request, 'index.html', context)
-    
-#@login_required(login_url='/login')   
+
+@login_required(login_url='/login')  
+def send_team_invite(request, pk):
+    project = Project.objects.get(project_id=pk)
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        invitation = TeamInvitation.create(email=email, team=project, inviter=request.user)
+        invitation.send_invitation(request)
+        messages.success(request, "Invitation sent successfully!")
+        return redirect('/')
+   
+    context = {'project': project}
+    return render(request, 'send_team_invite.html', context)
+   
+@login_required(login_url='/login')   
 def create_project(request):
-    created_by = request.user.username
-    #data = {'created_by' : created_by}
+    created_by = request.user
     project = Project(created_by=created_by)
     if request.method == 'POST':
         project_form = ProjectForm(request.POST, instance=project)
@@ -193,10 +205,10 @@ def register(request):
                 email.send()
                 messages.success(request, "Your Account has beem successfully created. We have sent you a confirmation email \
                                  .Please confirm your email in order to activate your account.")
-            return redirect('/')
+            return redirect('/register')
         else:
             messages.error(request, "Passwords don't match")
-            return redirect ('/')
+            return redirect ('/register')
     return render (request,'register.html')
 
 def activate(request, uidb64, token):
@@ -286,7 +298,8 @@ def reset(request, uidb64, token):
     else:
         return render(request, 'passwordreset.html', {'uidb64': uidb64, 'token': token})
     
-
+def landing_page(request):
+    return render (request, 'landingPage.html')
    
-       
+
 

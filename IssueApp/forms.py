@@ -31,7 +31,7 @@ class ProjectForm(forms.ModelForm):
     class Meta:
         model = Project
         fields = ('project_name', 'created_by', 'contributors')
-        exclude = ("created_by", )
+        exclude = ("created_by","contributors" )
         
     contributors = forms.ModelMultipleChoiceField(
         queryset=User.objects.all(),

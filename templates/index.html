@@ -17,38 +17,53 @@
     </head>
     <body>
 
-        <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom bg-white">
-            <div class="container-fluid bg-white">
-                
-                {% for message in messages%}
-                    <p style="color: red;">{{message}}</p>
-                {% endfor %}
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul class="navbar-nav ms-auto mt-2 mt-lg-0">
-                        <li class="nav-item active"><a class="nav-link" href="/projects">Home</a></li>
-                        <li class="nav-item active"><a class="nav-link" href="/userIssues">MyIssues</a></li>
-                        <li class="nav-item active"><a class="nav-link" href="/logout">Logout</a></li>
-                        
-                    </ul>
-                </div>
-            </div>
-        </nav>
+       
+        <nav class="navbar">
+             
+            {% for message in messages%}
+            <p style="color: red;">{{message}}</p>
+            {% endfor %}
+            <!-- LOGO -->
+            <div class="logo"></div>
+        
+            <!-- NAVIGATION MENU -->
+            <ul class="nav-links">
+        
+              <!-- USING CHECKBOX HACK -->
+        
+              <!-- NAVIGATION MENUS -->
+              <div class="menu">
+        
+                <li><a href="/">Home</a></li>
+                <li><a href="/">About</a></li>
+        
+                <li class="services">
+                  <a href="/">Services</a>
+        
+                  <!-- DROPDOWN MENU -->
+                  <ul class="dropdown">
+                    <li><a href="/">Dropdown 1 </a></li>
+                    <li><a href="/">Dropdown 2</a></li>
+                    <li><a href="/">Dropdown 2</a></li>
+                    <li><a href="/">Dropdown 3</a></li>
+                    <li><a href="/">Dropdown 4</a></li>
+                  </ul>
+        
+                </li>
+        
+                <li><a href="/">Pricing</a></li>
+                <li><a href="/">Contact</a></li>
+              </div>
+            </ul>
+          </nav>
+    
+       
         <div class="d-flex bg-light" id="wrapper">
-            <!-- Sidebar-->
-            <!-- <div class="border-end  list-group-item-light" id="sidebar-wrapper">
-                <div class="sidebar-heading border-bottom "><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
-                    Hey, {{request.user.username}}
-                 </button></div>
-            </div> -->
-            <!-- Page content wrapper-->
-            <div id="page-content-wrapper">
-                <!-- Top navigation-->
-                
-                <!-- Page content-->
+           
                 {% block content %}
                 <a href="/create_project"> <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
                     Add Project
-                 </button></a>                    <!-- column -->
+                 </button></a>                    
                     
                                                   
                             <div class="table-responsive ">
@@ -58,6 +73,7 @@
                                             <th class="border-top-0">Project Name</th>
                                             <th class="border-top-0">Project Contibutors</th>
                                             <th class="border-top-0">Project Creation Day</th>
+                                            
                                             <th class="border-top-0"></th>
                                             
                                             
@@ -88,6 +104,9 @@
                                                 <a href="/deleteProject/{{items.project_id}}"> <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
                                                     Delete
                                                  </button></a>
+                                                 <a href="/send_team_invite/{{items.project_id}}"> <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
+                                                    Send Invite
+                                                 </button></a>   
                                             </td> 
                                                
                                             
@@ -106,7 +125,7 @@
                
                     
                
-            </div>
+            
         </div>
         
         

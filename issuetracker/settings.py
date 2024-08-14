@@ -52,8 +52,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'IssueApp',
     'storages',
+    'invitations',
    
 ]
+# Configuration for django-invitations
+INVITATIONS_INVITATION_EXPIRY = 7  
+INVITATIONS_ONLY = False  
 
 EMAIL_USE_TLS = True
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
