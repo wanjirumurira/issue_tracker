@@ -1,0 +1,29 @@
+{% extends "signin.html" %}
+
+{% block content %}
+	{% if messages %}
+	<div class="messages">
+		{% for message in messages %}
+		<p class="message {{ message.tags }}">{{ message }}</p>
+		{% endfor %}
+	</div>
+	{% endif %}
+	<h3 class="text-center mb-4">Welcome</h3>
+
+	<body>
+		<p>Hello, </p>
+		<p>You have been invited by {{ inviter }} to join the project {{ project.project_name }} on our platform.</p>
+		<p>If you already have an account, you can go ahead and <a href="/login">login</a> and you will be automatically added to {{ project.project_name }}</p>
+		<p>If not first <a href="/register">create</a> an account then login.</p>
+		<p>Use the email address you received the initation link with.</p>
+		<p>email : {{ user.email }} </p>
+		<p>Thank you!</p>
+	</body>
+		
+	</form>
+
+{% endblock %}
+
+		
+		
+	

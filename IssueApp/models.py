@@ -26,9 +26,9 @@ class Project(models.Model):
 
 class TeamInvitation(BaseInvitation):
     team = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='invitations')
-
+    used = models.BooleanField(default=False)  # Add this field
     def __str__(self):
-        return f"Invite to {self.team.name} for {self.email}"
+        return f"Invite to {self.team.project_name} for {self.email}"
 
 
 

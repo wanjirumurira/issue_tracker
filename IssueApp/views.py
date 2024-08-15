@@ -32,14 +32,43 @@ def send_team_invite(request, pk):
     project = Project.objects.get(project_id=pk)
     if request.method == 'POST':
         email = request.POST.get('email')
+        existing_invitation = TeamInvitation.objects.filter(email=email, team=project).first()
+        if existing_invitation:
+            messages.error(request, "An invitation has already been sent to this email address for this project.")
+            return redirect(request.path) 
         invitation = TeamInvitation.create(email=email, team=project, inviter=request.user)
         invitation.send_invitation(request)
         messages.success(request, "Invitation sent successfully!")
         return redirect('/')
-   
+    
     context = {'project': project}
     return render(request, 'send_team_invite.html', context)
-   
+
+@csrf_exempt
+
+def accept_invitation(request, key):
+    invitation = TeamInvitation.objects.get(key=key)
+    if invitation.key_expired():
+        messages.error(request, "This invitation has expired.")
+        return redirect('/register')
+
+    else:
+        if invitation:
+            invitation.team.contributors.add(request.user)
+            invitation.used = True
+            invitation.save()
+            #messages.success(request, "Invitation accepted successfully! Please login to access the project.")
+            return render(request, 'loginWelcome.html')  # Redirect to a relevant page
+        else:
+            HttpResponse("This invitation has already been used.")
+            return redirect('/register')
+    context = {
+        'project': invitation.team,
+        'user': request.user,
+    }
+    
+    return render(request, 'loginWelcome.html', context)
+  
 @login_required(login_url='/login')   
 def create_project(request):
     created_by = request.user

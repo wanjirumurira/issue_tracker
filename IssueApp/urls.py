@@ -6,6 +6,7 @@ urlpatterns = [
     path('register',views.register,name='register'),
     # path('register_company',views.register_company,name='register_company'),
     path('send_team_invite/<str:pk>',views.send_team_invite, name='send_team_invite'),
+    path('invitations/accept-invite/<str:key>', views.accept_invitation, name='accept_invitation'),
     path('projects',views.projects,name='projects'),
     path('create_project',views.create_project,name='create_project'),
     path('updateProject/<str:pk>',views.updateProject,name='updateProject'),
