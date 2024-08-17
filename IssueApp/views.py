@@ -7,8 +7,12 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import SetPasswordForm
 from django.contrib.auth.models import User
-
+import string
+import random
+from django.utils.crypto import get_random_string
+from django.urls import reverse
 from django.core.mail import send_mail, EmailMessage
 from django.contrib.sites.shortcuts import get_current_site
 from django.views.decorators.csrf import csrf_exempt
@@ -27,47 +31,83 @@ def projects(request):
     context = {'project':project, 'users':users}
     return render(request, 'index.html', context)
 
-@login_required(login_url='/login')  
+@login_required(login_url='/login')
 def send_team_invite(request, pk):
     project = Project.objects.get(project_id=pk)
+    
     if request.method == 'POST':
         email = request.POST.get('email')
+        
+        # Check if an invitation has already been sent
         existing_invitation = TeamInvitation.objects.filter(email=email, team=project).first()
         if existing_invitation:
             messages.error(request, "An invitation has already been sent to this email address for this project.")
-            return redirect(request.path) 
-        invitation = TeamInvitation.create(email=email, team=project, inviter=request.user)
+            return redirect(request.path)
+        
+        # Generate a random username and password
+        username = get_random_string(length=8, allowed_chars=string.ascii_lowercase)
+        password = get_random_string(length=12, allowed_chars=string.ascii_letters + string.digits + string.punctuation)
+        
+        # Create the invitation
+        invitation = TeamInvitation.create(
+            email=email,
+            team=project,
+            inviter=request.user,
+            username=username,
+            password=password
+        )
+        user = User.objects.create_user(username=username, email=email, password=password)
+        user.is_active = False
+        user.save()
+        
+        # Send the invitation email
         invitation.send_invitation(request)
+        
         messages.success(request, "Invitation sent successfully!")
-        return redirect('/')
     
     context = {'project': project}
     return render(request, 'send_team_invite.html', context)
+    
 
 @csrf_exempt
-
 def accept_invitation(request, key):
-    invitation = TeamInvitation.objects.get(key=key)
-    if invitation.key_expired():
-        messages.error(request, "This invitation has expired.")
-        return redirect('/register')
+    try:
+        invitation = TeamInvitation.objects.get(key=key)
+    except TeamInvitation.DoesNotExist:
+        HttpResponse("Invalid invitation key.")
 
+    if invitation.key_expired():
+        HttpResponse("This invitation has expired.")
+
+    if invitation.used:
+        HttpResponse("This invitation has already been used.")
+    user = User.objects.get(username = invitation.username)
+    if invitation.username and invitation.password:
+        if request.method == 'POST':
+            password = request.POST['password']
+            password2 = request.POST['password2']
+            if password != password2:
+                messages.success(request,'Passwords do not match !')
+                return render(request, 'passwordreset.html')
+            else:
+                user.set_password(password)
+                user.is_active = True
+                user.save()
+            messages.success(request, "Your password has been successfully changed. You can now log in.")
+            return redirect('/login')
+        
+    
+        return render(request, 'passwordreset.html')
     else:
-        if invitation:
-            invitation.team.contributors.add(request.user)
+        existing_user = User.objects.filter(email=invitation.email).first()
+        if existing_user:
             invitation.used = True
             invitation.save()
-            #messages.success(request, "Invitation accepted successfully! Please login to access the project.")
-            return render(request, 'loginWelcome.html')  # Redirect to a relevant page
+            # messages.success(request, "Invitation accepted successfully with existing credentials!")
+            return redirect('/login')
         else:
-            HttpResponse("This invitation has already been used.")
+            messages.error(request, "No existing user found with this email.")
             return redirect('/register')
-    context = {
-        'project': invitation.team,
-        'user': request.user,
-    }
-    
-    return render(request, 'loginWelcome.html', context)
   
 @login_required(login_url='/login')   
 def create_project(request):
