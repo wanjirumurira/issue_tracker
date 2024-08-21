@@ -11,4 +11,5 @@ Tell the admin to use these forms by subclassing UserAdmin.
 
 admin.site.register(Project)
 admin.site.register(CreateIssue)
+admin.site.register(TeamInvitation)
 

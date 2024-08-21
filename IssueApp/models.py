@@ -4,10 +4,13 @@ from django.utils import timezone
 from django.core.mail import send_mail
 from django.urls import reverse
 import uuid
+import datetime
+
 from django.conf import settings
 from django.utils.crypto import get_random_string
 from invitations.models import Invitation as BaseInvitation
 # import datetime
+
 # from django.utils.translation import gettext as _
 
 class NameField(models.CharField):
@@ -29,13 +32,22 @@ class Project(models.Model):
 class TeamInvitation(BaseInvitation):
     team = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='invitations')
     used = models.BooleanField(default=False)
-    expires_at = models.DateTimeField(default=timezone.now() + timezone.timedelta(minutes=30))
     username = models.CharField(max_length=150, blank=True, null=True)
     password = models.CharField(max_length=255, blank=True, null=True)
-
+    
+    # def key_expired(self):
+    #     expiration_date = self.sent + datetime.timedelta(
+    #         days=settings.INVITATION_EXPIRY,
+    #     )
+    #     return expiration_date <= timezone.now()
     def key_expired(self):
-        return timezone.now() > self.expires_at
-
+        print(f"Sent field value: {self.sent}")  # Debug print
+        if self.sent is None:
+            # Handle None case
+            return True
+        expiration_date = self.sent + datetime.timedelta(days=1)
+        return expiration_date < timezone.now()
+    
     def send_invitation(self, request):
         invite_url = request.build_absolute_uri(reverse('accept_invitation', kwargs={'key': self.key}))
         if self.username and self.password:

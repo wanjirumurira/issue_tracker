@@ -56,7 +56,7 @@ INSTALLED_APPS = [
    
 ]
 # Configuration for django-invitations
-INVITATIONS_INVITATION_EXPIRY = 7  
+INVITATION_EXPIRY = 1  
 INVITATIONS_ONLY = False  
 
 EMAIL_USE_TLS = True

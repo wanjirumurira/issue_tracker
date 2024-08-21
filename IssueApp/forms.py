@@ -26,16 +26,28 @@ class IssueForm(forms.ModelForm):
    
     
         
-class ProjectForm(forms.ModelForm):
+# class ProjectForm(forms.ModelForm):
     
+#     class Meta:
+#         model = Project
+#         fields = ('project_name', 'created_by', 'contributors')
+#         exclude = ("created_by","contributors" )
+        
+#     contributors = forms.ModelMultipleChoiceField(
+#         queryset=User.objects.all(),
+#         widget=forms.CheckboxSelectMultiple
+#     )
+    
+
+class ProjectForm(forms.ModelForm):
+    contributors_emails = forms.CharField(
+        max_length=255,
+        help_text="Enter email addresses separated by commas",
+        required=False
+    )
+
     class Meta:
         model = Project
-        fields = ('project_name', 'created_by', 'contributors')
-        exclude = ("created_by","contributors" )
-        
-    contributors = forms.ModelMultipleChoiceField(
-        queryset=User.objects.all(),
-        widget=forms.CheckboxSelectMultiple
-    )
-    
-        
+        fields = ['project_name', 'created_by']
+
+   

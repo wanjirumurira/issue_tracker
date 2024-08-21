@@ -52,7 +52,7 @@
                 </li>
         
                 <li><a href="/">Pricing</a></li>
-                <li><a href="/">Contact</a></li>
+                <li><a href="/"> {{user.email}} </a></li>
               </div>
             </ul>
           </nav>
@@ -88,7 +88,7 @@
 
                                             <td >
                                                 {% for contributor in items.contributors.all %}
-                                                <li>{{contributor.username}}</li>
+                                                <li>{{contributor.email}}</li>
                                                 {% endfor %}
                                             </td>
                                             <td >
