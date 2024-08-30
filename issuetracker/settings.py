@@ -102,22 +102,22 @@ WSGI_APPLICATION = 'issuetracker.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
+# DATABASES = {
+#      'default': {
+#             'ENGINE': 'django.db.backends.sqlite3',
+#             'NAME': BASE_DIR / 'db.sqlite3',
+#    }
+#  }
 DATABASES = {
      'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-   }
+         'ENGINE': 'django.db.backends.postgresql',
+         'NAME': os.getenv('POSTGRES_NAME'),
+         'USER': os.getenv('POSTGRES_USER'),
+         'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
+         'HOST': 'localhost',   
+         'PORT': '5432',
+     }
  }
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': os.getenv('POSTGRES_NAME'),
-#         'USER': os.getenv('POSTGRES_USER'),
-#         'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
-#         'HOST': 'db',    # Replace with actual database host if different
-#         'PORT': '5432',
-#     }
-# }
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -151,7 +151,7 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
-
+AUTH_USER_MODEL = 'IssueApp.CustomUser'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/

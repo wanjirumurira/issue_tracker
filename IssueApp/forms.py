@@ -1,6 +1,6 @@
 from django import forms
 from .models import *
-
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 
 class CustomSelectMultiple(forms.ModelMultipleChoiceField):
       def label_from_instance(self, user):
@@ -19,7 +19,7 @@ class IssueForm(forms.ModelForm):
           'issue_description': forms.Textarea(attrs={'rows':6, 'cols':25}),
         }
     assigned_to = forms.ModelMultipleChoiceField(
-        queryset=User.objects.all(),
+        queryset=CustomUser.objects.all(),
         widget=forms.CheckboxSelectMultiple
     )
 
@@ -50,4 +50,12 @@ class ProjectForm(forms.ModelForm):
         model = Project
         fields = ['project_name', 'created_by']
 
-   
+class CustomUserCreationForm(UserCreationForm):
+    class Meta(UserCreationForm.Meta):
+        model = CustomUser
+        fields = ('username', 'email', 'profile_image', 'occupation')
+
+class CustomUserChangeForm(UserChangeForm):
+    class Meta(UserChangeForm.Meta):
+        model = CustomUser
+        fields = ('username', 'email', 'profile_image', 'occupation')

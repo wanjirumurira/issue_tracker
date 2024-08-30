@@ -16,7 +16,7 @@ from django.urls import reverse
 from django.core.mail import send_mail, EmailMessage
 from django.contrib.sites.shortcuts import get_current_site
 from django.views.decorators.csrf import csrf_exempt
-#from . models import CustomUser as User
+from . models import CustomUser as User
 from . models import *
 from .forms import *
 from . tokens import generate_token
@@ -417,5 +417,24 @@ def reset(request, uidb64, token):
 def landing_page(request):
     return render (request, 'landingPage.html')
    
+def profile (request, pk):
+    profile = User.objects.get(pk=pk)
+    if request.method=='POST':
+        if request.FILES.get('image')==None:
+            username = request.POST['username']
+            occupation = request.POST['occupation']
+            # new_profile = Profile.objects.create(profile_image = image, username = username, occupation = occupation)
+            # new_profile.save()
+        if request.FILES.get('image')!=None:
+            image = request.FILES.get('image')
+            username = request.POST['username']
+            occupation = request.POST['occupation']
+     
+        new_profile = Profile.objects.create(profile_image = image, username = username, occupation = occupation)
+           
+        new_profile.save()
 
+        return redirect('profile')
+    context = {'profile':profile}
+    return render(request, 'profile.html',context)
 

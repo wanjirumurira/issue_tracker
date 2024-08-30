@@ -13,6 +13,7 @@
         <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap" rel="stylesheet">
 	    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 	    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
         
     </head>
     <body>
@@ -53,6 +54,18 @@
         
                 <li><a href="/">Pricing</a></li>
                 <li><a href="/"> {{user.email}} </a></li>
+                    <div class="right-side lg:pr-4">
+
+                        <a href="/profile/{{user.id}}">
+                            <img src="{{user_profile.profile_image.url}}" class="header-avatar" alt="">
+                        </a>
+                        <div uk-drop="mode: click;offset:9" class="header_dropdown profile_dropdown border-t">
+                            <ul>
+                                <li><a href="/profile/{{user.id}}"> Account setting </a> </li>
+                                <li><a href="logout"> Log Out</a></li>
+                            </ul>
+                    </div>
+                </div>
               </div>
             </ul>
           </nav>
