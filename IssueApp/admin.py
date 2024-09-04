@@ -15,8 +15,8 @@ class CustomUserAdmin(UserAdmin):
     list_display = ('username', 'email', 'profile_image', 'occupation', 'is_staff','is_active')
     list_filter = ('is_staff', 'is_superuser', 'is_active', 'groups')
     fieldsets = (
-        (None, {'fields': ('username', 'password')}),
-        ('Personal info', {'fields': ('email', 'profile_image', 'occupation')}),
+        (None, {'fields': ('email', 'password')}),
+        ('Personal info', {'fields': ('username', 'profile_image', 'occupation')}),
         ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
         ('Important dates', {'fields': ('last_login', 'date_joined')}),
     )
@@ -33,4 +33,3 @@ admin.site.register(CustomUser, CustomUserAdmin)
 admin.site.register(Project)
 admin.site.register(CreateIssue)
 admin.site.register(TeamInvitation)
-

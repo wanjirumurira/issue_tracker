@@ -37,9 +37,18 @@ ALLOWED_HOSTS = ['*','127.0.0.1:8080']
 CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1:8000','http://127.0.0.1:1337']
 
 #Authentication backends
-AUTHENTICATION_BACKENDS = (
+# AUTHENTICATION_BACKENDS = (
     
-    'django.contrib.auth.backends.ModelBackend',
+#     'django.contrib.auth.backends.ModelBackend',
+# )
+# AUTHENTICATION_BACKENDS = [
+#     #'IssueApp.backends.EmailBackend',
+#     'django.contrib.auth.backends.ModelBackend',
+#     #'emailusernames.backends.EmailAuthBackend',
+
+# ]
+AUTHENTICATION_BACKENDS = (
+    ('django.contrib.auth.backends.ModelBackend'),
 )
 # Application definition
 
@@ -53,9 +62,9 @@ INSTALLED_APPS = [
     'IssueApp',
     'storages',
     'invitations',
+
    
 ]
-# Configuration for django-invitations
 INVITATION_EXPIRY = 1  
 INVITATIONS_ONLY = False  
 
@@ -102,22 +111,22 @@ WSGI_APPLICATION = 'issuetracker.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
+DATABASES = {
+      'default': {
+             'ENGINE': 'django.db.backends.sqlite3',
+             'NAME': BASE_DIR / 'db.sqlite3',
+    }
+  }
 # DATABASES = {
 #      'default': {
-#             'ENGINE': 'django.db.backends.sqlite3',
-#             'NAME': BASE_DIR / 'db.sqlite3',
-#    }
+#          'ENGINE': 'django.db.backends.postgresql',
+#          'NAME': os.getenv('POSTGRES_NAME'),
+#          'USER': os.getenv('POSTGRES_USER'),
+#          'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
+#          'HOST': 'localhost',   
+#          'PORT': '5432',
+#      }
 #  }
-DATABASES = {
-     'default': {
-         'ENGINE': 'django.db.backends.postgresql',
-         'NAME': os.getenv('POSTGRES_NAME'),
-         'USER': os.getenv('POSTGRES_USER'),
-         'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
-         'HOST': 'localhost',   
-         'PORT': '5432',
-     }
- }
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators

@@ -21,11 +21,7 @@ class IssueForm(forms.ModelForm):
     assigned_to = forms.ModelMultipleChoiceField(
         queryset=CustomUser.objects.all(),
         widget=forms.CheckboxSelectMultiple
-    )
-
-   
-    
-        
+    )    
 # class ProjectForm(forms.ModelForm):
     
 #     class Meta:
@@ -40,15 +36,22 @@ class IssueForm(forms.ModelForm):
     
 
 class ProjectForm(forms.ModelForm):
-    contributors_emails = forms.CharField(
-        max_length=255,
-        help_text="Enter email addresses separated by commas",
-        required=False
-    )
+    # contributors = forms.CharField(
+    #     max_length=255,
+    #     help_text="Enter email addresses separated by commas",
+    #     required=False
+    # )
 
     class Meta:
         model = Project
-        fields = ['project_name', 'created_by']
+        fields = ('project_name',)
+
+    # def clean_contributors_emails(self):
+    #     email_list = self.cleaned_data.get('contributors', '')
+    #     if not email_list:
+    #         return []
+    #     emails = [email.strip() for email in email_list.split(',') if email.strip()]
+    #     return emails
 
 class CustomUserCreationForm(UserCreationForm):
     class Meta(UserCreationForm.Meta):

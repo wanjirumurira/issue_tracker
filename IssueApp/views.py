@@ -15,7 +15,7 @@ from django.utils.crypto import get_random_string
 from django.urls import reverse
 from django.core.mail import send_mail, EmailMessage
 from django.contrib.sites.shortcuts import get_current_site
-from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from . models import CustomUser as User
 from . models import *
 from .forms import *
@@ -29,8 +29,13 @@ def projects(request):
     user = request.user
     contributed_projects = Project.objects.filter(contributors=user)
     created_projects = Project.objects.filter(created_by=user)
-    all_projects = contributed_projects | created_projects
+    all_projects = Project.objects.all()
+    #all_projects = contributed_projects | created_projects
     #users = User.objects.all()
+    for project in all_projects:
+        print(f"Project: {project.project_name}")
+        contributors_emails = [contributor for contributor in project.contributors.all()]
+        print(f"Contributors: {contributors_emails}")
     context = {'project':all_projects, 'user':user}
     return render(request, 'index.html', context)
 
@@ -41,14 +46,10 @@ def send_team_invite(request, pk):
     if request.method == 'POST':
         email = request.POST.get('email')
         user_exists = User.objects.filter(email=email).exists()
-
-
-        # Check if an invitation has already been sent
         existing_invitation = TeamInvitation.objects.filter(
             email=email, 
             team=project,
             used=False).first()
-        print(project.contributors.filter(email=email))
         if project.contributors.filter(email=email).exists():
             messages.error(request, "This user is already part of the project")
             return redirect(request.path)
@@ -58,15 +59,11 @@ def send_team_invite(request, pk):
             return redirect(request.path)
         
         if user_exists:
-            # For existing users, no need to generate credentials
             username = None
             password = None
         else:
-            # Generate a random username and password for new users
             username = get_random_string(length=8, allowed_chars=string.ascii_lowercase)
             password = get_random_string(length=12, allowed_chars=string.ascii_letters + string.digits + string.punctuation)
-            
-            # Create the user with the generated username and password
             user = User.objects.create_user(username=username, email=email, password=password)
             user.is_active = False
             user.save()
@@ -90,10 +87,10 @@ def send_team_invite(request, pk):
     context = {'project': project}
     return render(request, 'send_team_invite.html', context)
     
-@csrf_exempt
+
 def accept_invitation(request, key):
     invitation = TeamInvitation.objects.get(key=key)
-    
+    project = invitation.team
     try:
         invitation = TeamInvitation.objects.get(key=key)
     except TeamInvitation.DoesNotExist:
@@ -112,7 +109,7 @@ def accept_invitation(request, key):
     except User.DoesNotExist:
     #     #print(f"Invitation details: {invitation.email}")
         return HttpResponse("User matching invitation not found.")
-
+    # New user
     if invitation.username and invitation.password:
         user.is_active = False
         if request.method == 'POST':
@@ -127,6 +124,8 @@ def accept_invitation(request, key):
                 user.save()
                 invitation.accepted = True
                 invitation.save()
+                project.contributors.add(user)
+
             messages.success(request, "Your password has been successfully changed. You can now log in.")
             return redirect('/login')
         
@@ -135,8 +134,11 @@ def accept_invitation(request, key):
     else:
         existing_user = User.objects.filter(email=invitation.email).exists()
         if existing_user:
+            project.contributors.add(user)
             invitation.accepted = True
             invitation.save()
+            project.contributors.add(user)
+
             # messages.success(request, "Invitation accepted successfully with existing credentials!")
             return redirect('/login')
     return render(request, 'passwordreset.html')
@@ -144,30 +146,17 @@ def accept_invitation(request, key):
   
 @login_required(login_url='/login')   
 def create_project(request):
-    created_by = request.user
-    project = Project(created_by=created_by)
     if request.method == 'POST':
         project_form = ProjectForm(request.POST)
         if project_form.is_valid():
-            # Handle contributors
             project = project_form.save(commit=False)
-            project.created_by = request.user
-            project.save() 
-            emails = request.POST.get('contributors_emails', '')
-            emails = [email.strip() for email in emails.split(',') if email.strip()]
-            users = User.objects.filter(email__in=emails)
-            non_existing_emails = set(emails) - set(user.email for user in users)
-
-            if non_existing_emails:
-                messages.error(request, f"The following email addresses do not correspond to any users: {', '.join(non_existing_emails)}")
-                return redirect(request.path)
-            else:
-                project.contributors.add(*users)
-                project_form.save()
-                messages.success(request, "Project successfully created")
-                return redirect('projects')
+            project.created_by = request.user 
+            project.save()
+            project_form.save_m2m()
+            messages.success(request, "Project successfully created")   
+          
     else:
-        project_form = ProjectForm(instance=project)
+        project_form = ProjectForm()
     context = {
                 'create_project' : project_form
                 }
@@ -280,7 +269,7 @@ def deleteIssues(request,pk):
     context = {'issue':issue}
     return render(request,'deleteissue.html', context)
 
-@csrf_exempt
+@csrf_protect
 def register(request):
     if request.method == 'POST':
         username = request.POST['username']
@@ -345,13 +334,14 @@ def activate(request, uidb64, token):
     else:
         return render(request, 'activation_failed.html')
 
-@csrf_exempt
 def sign_in(request):
     if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        user = authenticate(request, username=username, password=password)
+        email = request.POST.get('email')
+        print(email)
 
+        password = request.POST.get('password')
+        user = authenticate(request, username=email, password=password)
+        print(user)
         if user is not None:
             login(request, user)
             return redirect('projects')
@@ -430,7 +420,7 @@ def profile (request, pk):
             username = request.POST['username']
             occupation = request.POST['occupation']
      
-        new_profile = Profile.objects.create(profile_image = image, username = username, occupation = occupation)
+        new_profile = User.objects.create(profile_image = image, username = username, occupation = occupation)
            
         new_profile.save()
 
