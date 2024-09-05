@@ -116,7 +116,7 @@ def accept_invitation(request, key):
             password = request.POST['password']
             password2 = request.POST['password2']
             if password != password2:
-                messages.success(request,'Passwords do not match !')
+                messages.error(request,'Passwords do not match !')
                 return render(request, 'passwordreset.html')
             else:
                 user.set_password(password)
@@ -215,7 +215,7 @@ def userIssues(request):
 
 @login_required(login_url='/login')
 def create_issues(request, pk):
-    created_by = request.user.username
+    created_by = request.user
     project_name = Project.objects.get(project_name = pk)
     issue = CreateIssue(project_name = project_name, created_by = created_by)
     if request.method == 'POST':
@@ -407,24 +407,40 @@ def reset(request, uidb64, token):
 def landing_page(request):
     return render (request, 'landingPage.html')
    
+# def profile (request, pk):
+#     profile = User.objects.get(id_user=pk)
+#     if request.method=='POST':
+#         if request.FILES.get('image')==None:
+#             username = request.POST.get('username', profile.username)
+#             occupation = request.POST.get('occupation', profile.occupation)
+#             # new_profile = Profile.objects.create(profile_image = image, username = username, occupation = occupation)
+#             # new_profile.save()
+#         if request.FILES.get('image')!=None:
+#             image = request.FILES.get('image')
+#             username = request.POST['username']
+#             occupation = request.POST['occupation']
+     
+#         # new_profile = User.objects.create(profile_image = image, username = username, occupation = occupation)
+           
+#         profile.save()
+#     context = {'profile':profile}
+#     return render(request, 'profile.html',context)
 def profile (request, pk):
-    profile = User.objects.get(pk=pk)
+    profile = User.objects.get(id_user=pk)
     if request.method=='POST':
         if request.FILES.get('image')==None:
-            username = request.POST['username']
-            occupation = request.POST['occupation']
-            # new_profile = Profile.objects.create(profile_image = image, username = username, occupation = occupation)
-            # new_profile.save()
-        if request.FILES.get('image')!=None:
-            image = request.FILES.get('image')
-            username = request.POST['username']
-            occupation = request.POST['occupation']
-     
-        new_profile = User.objects.create(profile_image = image, username = username, occupation = occupation)
+            profile_form = CustomUserCreationForm(request.POST, request.FILES, instance=profile)
+            
+            if profile_form.is_valid():
+                profile_form.save()
+                return redirect('profile', pk=profile.id_user)
+    else:
+        profile_form =   CustomUserCreationForm(instance=profile)
+                
+       
+        # new_profile = User.objects.create(profile_image = image, username = username, occupation = occupation)
            
-        new_profile.save()
-
-        return redirect('profile')
-    context = {'profile':profile}
+        
+    context = {'form': profile_form,
+                'profile':profile, }
     return render(request, 'profile.html',context)
-

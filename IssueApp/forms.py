@@ -53,10 +53,18 @@ class ProjectForm(forms.ModelForm):
     #     emails = [email.strip() for email in email_list.split(',') if email.strip()]
     #     return emails
 
-class CustomUserCreationForm(UserCreationForm):
-    class Meta(UserCreationForm.Meta):
+# class CustomUserCreationForm(UserCreationForm):
+#     class Meta(UserCreationForm.Meta):
+#         model = CustomUser
+#         fields = ('username', 'email', 'profile_image', 'occupation')
+#         exclude = ("password","contributors" )
+class CustomUserCreationForm(forms.ModelForm):
+    class Meta:
         model = CustomUser
         fields = ('username', 'email', 'profile_image', 'occupation')
+        widgets = {
+            'profile_image': forms.ClearableFileInput(attrs={'multiple': True}),
+        }
 
 class CustomUserChangeForm(UserChangeForm):
     class Meta(UserChangeForm.Meta):
