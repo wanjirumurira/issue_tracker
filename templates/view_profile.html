@@ -1,0 +1,16 @@
+{% extends "signin.html" %}
+
+{% block content %}
+
+<h3 class="text-center mb-4">Profile</h3>
+
+<!-- <p><h3>Image</h3><img src="{{ profile.profile_image.url }}" alt="{{ profile.username }}'s profile image">
+</p> -->
+<p><h3>Image</h3>{{ profile.profile_image.url }} </p>
+<p><h3>Email</h3>{{ profile.email }}</p>
+<p><h3>Occupation</h3>{{ profile.occupation }}</p>
+{% if user.is_authenticated and user.id_user == profile.id_user %}
+    <a href="{% url 'edit_profile' pk=profile.id_user %}">Edit Profile</a>
+{% endif %}
+
+{% endblock %}

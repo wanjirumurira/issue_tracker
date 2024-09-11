@@ -19,9 +19,18 @@ class IssueForm(forms.ModelForm):
           'issue_description': forms.Textarea(attrs={'rows':6, 'cols':25}),
         }
     assigned_to = forms.ModelMultipleChoiceField(
-        queryset=CustomUser.objects.all(),
+        queryset=CustomUser.objects.none(),
         widget=forms.CheckboxSelectMultiple
-    )    
+    )
+    def __init__(self, *args, **kwargs):
+        project = kwargs.pop('project', None)
+        super(IssueForm, self).__init__(*args, **kwargs)
+        if project:
+            contributors = project.contributors.all()
+            if contributors.exists():
+                self.fields['assigned_to'].queryset = contributors
+            else:
+                self.fields['assigned_to'].widget = forms.HiddenInput()
 # class ProjectForm(forms.ModelForm):
     
 #     class Meta:

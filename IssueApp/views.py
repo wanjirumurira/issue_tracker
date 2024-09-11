@@ -2,7 +2,7 @@ from django.http import HttpResponse
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.template.loader import render_to_string
-from django.shortcuts import render,redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate, logout
@@ -212,6 +212,18 @@ def userIssues(request):
     
     }
     return render(request, "userIssues.html", context)
+
+@login_required(login_url='/login')
+def contributors_list(request, pk):
+    project = get_object_or_404(Project, project_id=pk)
+    contributors = project.contributors.all()
+    
+    context = {
+                'project' : project,
+                'contributors': contributors,
+                }
+    
+    return render(request, "contributors.html", context)
 
 @login_required(login_url='/login')
 def create_issues(request, pk):
@@ -444,3 +456,9 @@ def profile (request, pk):
     context = {'form': profile_form,
                 'profile':profile, }
     return render(request, 'profile.html',context)
+
+@login_required
+def view_profile(request, pk):
+    profile = get_object_or_404(User, id_user=pk)
+    context = {'profile': profile}
+    return render(request, 'view_profile.html', context)
