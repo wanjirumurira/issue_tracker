@@ -32,9 +32,15 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['*','127.0.0.1:8080']
+ALLOWED_HOSTS = ['*','127.0.0.1:1337']
 #ALLOWED_HOSTS = [os.getenv('DJANGO_ALLOWED_HOSTS')]
 CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1:8000','http://127.0.0.1:1337']
+# Determine if we're running in Docker
+USE_DOCKER_PORT = os.environ.get('USE_DOCKER', '')
+
+# Docker port setting (only used if USE_DOCKER_PORT is True)
+DOCKER_PORT = os.environ.get('DOCKER_PORT', '')
+
 
 #Authentication backends
 # AUTHENTICATION_BACKENDS = (
@@ -189,3 +195,4 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
+

@@ -302,31 +302,39 @@ def register(request):
                 # user.set_password(password)
                 user.is_active = False
                 user.save()
-                #Email Address Confirmation 
                 current_site = get_current_site(request)
+                if getattr(settings, 'USE_DOCKER_PORT'):
+                    port = getattr(settings, 'DOCKER_PORT', '1337')
+                    domain_with_port = f"{current_site.domain}:{port}"
+                else:
+                    domain_with_port = request.get_host()
+                print(domain_with_port) 
                 email_subject = "Confirm your email - Issue Tracker"
                 context = {
-                    'name':username,
-                    'domain': current_site.domain,
+                    'name': username,
+                    'domain': domain_with_port,
                     'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-                    'token': generate_token.make_token(user)
+                    'token': generate_token.make_token(user),
+                    'protocol': 'https' if request.is_secure() else 'http'
                 }
-                message2 = render_to_string('email.html',context)
+                message2 = render_to_string('email.html', context)
                 email = EmailMessage(
                     email_subject,
                     message2,
                     settings.EMAIL_HOST_USER,
                     [user_email],
                 )
-                
                 email.send()
                 messages.success(request, "Your Account has beem successfully created. We have sent you a confirmation email \
                                  .Please confirm your email in order to activate your account.")
+            
+            
             return redirect('/register')
         else:
             messages.error(request, "Passwords don't match")
             return redirect ('/register')
     return render (request,'register.html')
+
 
 def activate(request, uidb64, token):
     try:
