@@ -19,6 +19,7 @@ from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from . models import CustomUser as User
 from . models import *
 from .forms import *
+from django.db import IntegrityError  
 from . tokens import generate_token
 from issuetracker import settings
 
@@ -32,10 +33,6 @@ def projects(request):
     all_projects = Project.objects.all()
     #all_projects = contributed_projects | created_projects
     #users = User.objects.all()
-    for project in all_projects:
-        print(f"Project: {project.project_name}")
-        contributors_emails = [contributor for contributor in project.contributors.all()]
-        print(f"Contributors: {contributors_emails}")
     context = {'project':all_projects, 'user':user}
     return render(request, 'index.html', context)
 
@@ -193,7 +190,7 @@ def deleteProject(request,pk):
 @login_required(login_url='/login')
 def issue_page(request, pk):
     project_name = Project.objects.get(project_name = pk)
-    issues = CreateIssue.objects.filter(project_name = project_name)
+    issues = CreateIssue.objects.filter(project = project_name)
     
     context = {
                 'issues' : issues ,
@@ -202,9 +199,11 @@ def issue_page(request, pk):
     }
     return render(request, "issues.html", context)
 
+# to be considered
 @login_required(login_url='/login')
 def userIssues(request):
     user = User.objects.filter(username = request.user.username)
+    print(user)
     issues = CreateIssue.objects.filter(assigned_to__in = user)  
     print(issues)
     context = {
@@ -225,26 +224,34 @@ def contributors_list(request, pk):
     
     return render(request, "contributors.html", context)
 
+
 @login_required(login_url='/login')
 def create_issues(request, pk):
-    created_by = request.user
     project_name = Project.objects.get(project_name = pk)
-    issue = CreateIssue(project_name = project_name, created_by = created_by)
+    print(project_name)
     if request.method == 'POST':
-        issue_form = IssueForm(request.POST, request.FILES, instance=issue)
+        issue_form = IssueForm(request.POST, request.FILES)
         if issue_form.is_valid():
-            issue_form.save()
-            messages.success(request, "Issue successfully created")
-            return redirect('issues',pk = project_name)
+            #try:
+                issue = issue_form.save(commit=False)
+                issue.created_by = request.user
+                issue.project = project_name    
+                issue_form.save()
+
+                #print(f'This issue name {issue}')
+                messages.success(request, "Issue successfully created")
+                return redirect('issues', pk=pk)
+
+            #except IntegrityError:
+                #messages.error(request, "An issue with this name already exists in this project!")
     else:
-        issue_form = IssueForm(instance=issue)
+        issue_form = IssueForm()
     context = {
                 'create_issue' : issue_form,
                 'project_name' : project_name
                 }
     
     return render(request, "createIssue.html", context)
-
 
 @login_required(login_url='/login')  
 def updateIssues(request,pk):

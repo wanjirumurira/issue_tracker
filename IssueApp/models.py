@@ -10,15 +10,6 @@ from django.utils.crypto import get_random_string
 from invitations.models import Invitation as BaseInvitation
 # import datetime
 
-# from django.utils.translation import gettext as _
-
-# class Profile(models.Model):
-#     user = models.ForeignKey(User, on_delete=models.CASCADE)
-#     id_user = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
-#     profile_image = models.ImageField(upload_to = 'Profile_images', default='blank-profile-picture.png')
-#     occupation= models.CharField(max_length=100, blank=True)
-#     def __str__(self):
-#         return self.user.username
 class CustomUserManager(BaseUserManager):
     def create_user(self, username, email, password=None, **extra_fields):
         if not email:
@@ -122,7 +113,7 @@ class CreateIssue(models.Model):
                ('Medium', 'Medium'),
                ('High', 'High'),
               )
-    project_name = models.CharField(max_length=150)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name="issues")
     issue_name = models.CharField(max_length=150)
     issue_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     issue_description = models.TextField(blank=False)

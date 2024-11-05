@@ -6,7 +6,7 @@
     {% csrf_token %}  
     {{ create_issue.as_p }}  
     <p>
-        <a href="/project/{{project_name}}"><button type="submit" class="btn btn-primary rounded submit p-2 px-3">Submit</button></a> 
+        <button type="submit" class="btn btn-primary rounded submit p-2 px-3">Submit</button>
         <a href="/project/{{project_name}}"><button type="button" class="btn btn-primary rounded submit p-2 px-3">Cancel</button></a>
     </p>
     
